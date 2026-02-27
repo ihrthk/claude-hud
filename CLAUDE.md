@@ -16,6 +16,41 @@ npm run build        # Build TypeScript to dist/
 echo '{"model":{"display_name":"Opus"},"context_window":{"current_usage":{"input_tokens":45000},"context_window_size":200000}}' | node dist/index.js
 ```
 
+## Local Development
+
+### Hot Reload Workflow
+
+```bash
+# 1. Start watch mode (auto-compile on file changes)
+npm run dev
+
+# 2. Edit src/ files - tsc automatically recompiles to dist/
+
+# 3. Restart Claude Code to see changes
+```
+
+### StatusLine Configuration
+
+To use your local development build, configure `~/.claude/settings.json`:
+
+```json
+{
+  "statusLine": {
+    "type": "command",
+    "command": "\"/opt/homebrew/Cellar/node/24.9.0/bin/node\" \"/Users/zhangls/AiProjects/claude-hud/dist/index.js\""
+  }
+}
+```
+
+### Project Paths
+
+| Path | Purpose |
+|------|---------|
+| `~/AiProjects/claude-hud/src/` | Source code (edit here) |
+| `~/AiProjects/claude-hud/dist/` | Compiled output (auto-generated) |
+| `~/.claude/plugins/marketplaces/claude-hud` | Plugin marketplace link |
+| `~/.claude/plugins/cache/claude-hud/` | Installed cache (do not edit) |
+
 ## Architecture
 
 ### Data Flow
@@ -121,3 +156,34 @@ Note: `statusLine` is NOT a valid plugin.json field. It must be configured in se
 
 - **Runtime**: Node.js 18+ or Bun
 - **Build**: TypeScript 5, ES2022 target, NodeNext modules
+
+## Fork Sync Rules
+ 
+### Remote Configuration
+
+| Remote | URL | Purpose |
+|--------|-----|---------|
+| `origin` | `git@github.com:ihrthk/claude-hud.git` | Your fork (read/write) |
+| `upstream` | `https://github.com/jarrodwatts/claude-hud` | Original repo (read-only) |
+
+### Sync Commands
+
+```bash
+# 1. Add upstream (one-time setup)
+git remote add upstream https://github.com/jarrodwatts/claude-hud
+
+# 2. Fetch upstream changes
+git fetch upstream
+
+# 3. Merge upstream/main into local
+git merge upstream/main
+
+# 4. Push to your fork
+git push origin main
+```
+
+### Quick Sync (all-in-one)
+
+```bash
+git fetch upstream && git merge upstream/main && git push origin main
+```

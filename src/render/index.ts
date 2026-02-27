@@ -8,6 +8,8 @@ import {
   renderProjectLine,
   renderEnvironmentLine,
   renderUsageLine,
+  renderGLMUsageLine,
+  renderLastPromptLine,
 } from './lines/index.js';
 import { dim, RESET } from './colors.js';
 
@@ -66,6 +68,12 @@ function renderCompact(ctx: RenderContext): string[] {
 function renderExpanded(ctx: RenderContext): string[] {
   const lines: string[] = [];
 
+  // 第一行：GLM 使用情况（同步返回缓存，后台异步更新）
+  const glmUsageLine = renderGLMUsageLine();
+  if (glmUsageLine) {
+    lines.push(glmUsageLine);
+  }
+
   const projectLine = renderProjectLine(ctx);
   if (projectLine) {
     lines.push(projectLine);
@@ -82,6 +90,12 @@ function renderExpanded(ctx: RenderContext): string[] {
   const environmentLine = renderEnvironmentLine(ctx);
   if (environmentLine) {
     lines.push(environmentLine);
+  }
+
+  // 最后一行：上一个用户提示词
+  const lastPromptLine = renderLastPromptLine(ctx);
+  if (lastPromptLine) {
+    lines.push(lastPromptLine);
   }
 
   return lines;

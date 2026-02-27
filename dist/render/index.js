@@ -2,7 +2,7 @@ import { renderSessionLine } from './session-line.js';
 import { renderToolsLine } from './tools-line.js';
 import { renderAgentsLine } from './agents-line.js';
 import { renderTodosLine } from './todos-line.js';
-import { renderIdentityLine, renderProjectLine, renderEnvironmentLine, renderUsageLine, } from './lines/index.js';
+import { renderIdentityLine, renderProjectLine, renderEnvironmentLine, renderUsageLine, renderGLMUsageLine, renderLastPromptLine, } from './lines/index.js';
 import { dim, RESET } from './colors.js';
 function stripAnsi(str) {
     // eslint-disable-next-line no-control-regex
@@ -47,6 +47,11 @@ function renderCompact(ctx) {
 }
 function renderExpanded(ctx) {
     const lines = [];
+    // 第一行：GLM 使用情况（同步返回缓存，后台异步更新）
+    const glmUsageLine = renderGLMUsageLine();
+    if (glmUsageLine) {
+        lines.push(glmUsageLine);
+    }
     const projectLine = renderProjectLine(ctx);
     if (projectLine) {
         lines.push(projectLine);
@@ -62,6 +67,11 @@ function renderExpanded(ctx) {
     const environmentLine = renderEnvironmentLine(ctx);
     if (environmentLine) {
         lines.push(environmentLine);
+    }
+    // 最后一行：上一个用户提示词
+    const lastPromptLine = renderLastPromptLine(ctx);
+    if (lastPromptLine) {
+        lines.push(lastPromptLine);
     }
     return lines;
 }
