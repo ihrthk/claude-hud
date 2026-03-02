@@ -214,10 +214,27 @@ function getGLMUsage(): string | null {
   return cached?.data ?? null;
 }
 
+// 后台更新超时时间（30秒）
+const UPDATE_TIMEOUT_MS = 30_000;
+
 // 检查是否有后台更新正在运行
 function isBackgroundUpdateRunning(): boolean {
   try {
-    return fs.existsSync(BACKGROUND_UPDATE_FILE);
+    if (!fs.existsSync(BACKGROUND_UPDATE_FILE)) {
+      return false;
+    }
+
+    // 读取文件时间戳，检查是否超时
+    const timestamp = parseInt(fs.readFileSync(BACKGROUND_UPDATE_FILE, 'utf8'), 10);
+    const isStale = Date.now() - timestamp > UPDATE_TIMEOUT_MS;
+
+    if (isStale) {
+      // 删除过期的标志文件
+      fs.unlinkSync(BACKGROUND_UPDATE_FILE);
+      return false;
+    }
+
+    return true;
   } catch {
     return false;
   }
